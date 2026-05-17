@@ -246,3 +246,45 @@ int main(int argc, char *argv[])
     return fuse_main(argc, argv, &x_oper, NULL);
 }
 ```
+## Penjelasan Fungsi pada `kenz_rescue.c`
+
+### `x_getattr()`
+
+Fungsi `x_getattr()` digunakan untuk mengambil metadata file atau folder seperti tipe file, ukuran file, dan permission. Function ini juga menentukan bahwa `tujuan.txt` merupakan file virtual, sedangkan file lainnya diambil dari folder asli `amba_files`.
+
+---
+
+### `x_readdir()`
+
+Fungsi `x_readdir()` digunakan untuk membaca isi directory saat user menjalankan command seperti `ls`. Function ini menampilkan seluruh file asli dari folder `amba_files` dan menambahkan file virtual `tujuan.txt` ke dalam hasil directory listing.
+
+---
+
+### `x_open()`
+
+Fungsi `x_open()` digunakan untuk menangani proses pembukaan file. Jika file yang dibuka adalah `tujuan.txt`, maka file langsung dianggap berhasil dibuka karena bersifat virtual. Untuk file asli, function akan mencoba membuka file tersebut dari source directory.
+
+---
+
+### `x_read()`
+
+Fungsi `x_read()` digunakan untuk membaca isi file. Untuk file biasa, function akan membaca isi file asli dari `amba_files` menggunakan konsep passthrough filesystem. Untuk `tujuan.txt`, function akan membaca isi dari `1.txt` sampai `7.txt`, mengambil data setelah `KOORD:`, lalu menggabungkannya menjadi satu isi file virtual.
+
+---
+
+### `main()`
+
+Fungsi `main()` berfungsi menjalankan filesystem FUSE dengan memanggil `fuse_main()` dan mendaftarkan seluruh callback function seperti `getattr`, `readdir`, `open`, dan `read` agar filesystem virtual dapat berjalan.
+
+## Output
+1. Isi dari folder mnt setelah kenz_rescue berhasil dijalankan                                               
+   <img width="561" height="29" alt="image" src="https://github.com/user-attachments/assets/b98b3731-2aab-46d7-8758-dc8be058911e" />
+
+2. Perbandingan isi mnt/1.txt dan amba_files/1.txt
+   <img width="829" height="268" alt="image" src="https://github.com/user-attachments/assets/f3c3e685-1136-445d-82fa-24c4557285e2" />
+
+3. Isi dari file mnt/tujuan.txt
+   <img width="609" height="30" alt="image" src="https://github.com/user-attachments/assets/5a8d024b-3e1d-4cea-9cb2-f08867add743" />                                              
+
+
+
